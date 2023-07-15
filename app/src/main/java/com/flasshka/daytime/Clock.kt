@@ -1,3 +1,5 @@
+package com.flasshka.daytime
+
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -15,14 +17,12 @@ import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
 
 class Clock {
-    private val timeState = mutableStateOf(LocalTime.now())
-    var time: LocalTime
-        get() = timeState.value
-        private set(value) {
-            timeState.value = value
-        }
 
-    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+    companion object {
+        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+    }
+
+    private val timeState = mutableStateOf(LocalTime.now())
 
     init {
         timerUpd()
@@ -31,8 +31,8 @@ class Clock {
     private fun timerUpd() {
         MainScope().launch {
             while (true) {
-                time = LocalTime.now()
-                Log.d("test", time.format(timeFormatter))
+                timeState.value = LocalTime.now()
+                Log.d("test", timeState.value.format(timeFormatter))
                 delay(100)
             }
         }
@@ -64,7 +64,7 @@ class Clock {
                     )
                 )
             }
-            Text(text = time.format(timeFormatter), fontSize = fontSize)
+            Text(text = timeState.value.format(timeFormatter), fontSize = fontSize)
         }
     }
 }
