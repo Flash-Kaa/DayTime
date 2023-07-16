@@ -45,10 +45,10 @@ class MainActivity : ComponentActivity() {
 
                 Spacer(modifier = Modifier.size(0.dp, 200.dp))
                 for(i in 1..15) {
-                    val act = Activity("this tag", "test activity", LocalTime.now())
-                    ListActivities.activities.add(act)
+                    val act = Activity("this tag $i", "test activity", LocalTime.now())
+                    ListActivities.Add(act)
                 }
-                ListActivities.DrawActivities(displayMetrics.widthPixels.toFloat())
+                ListActivities.DrawActivities(displayMetrics)
             }
 
         }

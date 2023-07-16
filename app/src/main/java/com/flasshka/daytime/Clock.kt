@@ -17,7 +17,6 @@ import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
 
 class Clock {
-
     companion object {
         val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
     }
@@ -32,7 +31,7 @@ class Clock {
         MainScope().launch {
             while (true) {
                 timeState.value = LocalTime.now()
-                Log.d("test", timeState.value.format(timeFormatter))
+                Log.d(LogTags.TimeTag, timeState.value.format(timeFormatter))
                 delay(100)
             }
         }
