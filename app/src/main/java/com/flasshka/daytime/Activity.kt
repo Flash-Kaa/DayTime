@@ -1,6 +1,5 @@
 package com.flasshka.daytime
 
-import android.util.DisplayMetrics
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -24,23 +23,18 @@ class Activity(
     private val startTime: LocalTime, private val endTime: MutableState<LocalTime?> = mutableStateOf(null)
 ) {
     companion object {
-        var startLineBetweenTimes = 5.dp
-        var lenLineBetweenTimes = 100.dp
         var tagSize = 20.dp
-        var deleteAndRepeatButtonsStize = 40.dp
+        var lenLineBetweenTimes = 50.dp
+        var deleteAndRepeatButtonsSize = 40.dp
     }
 
     @Composable
-    fun Draw(
-        fontSize: TextUnit,
-        displayWidth: DisplayMetrics
-    ) {
+    fun Draw(fontSize: TextUnit) {
         Row(
             modifier = Modifier
                 .padding(5.dp)
                 .fillMaxWidth()
         ) {
-
             DrawTime(fontSize = fontSize)
             DrawTagWithDescription(fontSize = fontSize)
 
@@ -48,7 +42,7 @@ class Activity(
                 DrawButtonToEndTimer(fontSize = fontSize)
             }
             else {
-                DrawDeleteAndRepeatButtons(displayWidth)
+                DrawDeleteAndRepeatButtons()
             }
         }
     }
@@ -56,18 +50,18 @@ class Activity(
     @Composable
     private fun DrawTime(fontSize: TextUnit) {
         Column(modifier = Modifier.fillMaxWidth(0.25f)) {
-            Text(text = startTime.format(Clock.timeFormatter), fontSize = fontSize)
+            Text(text = startTime.format(Clock.timeFormatterWithoutSeconds), fontSize = fontSize)
 
             Canvas(modifier = Modifier) {
                 drawLine(
                     color = Color.Gray,
-                    start =  Offset( startLineBetweenTimes.toPx(), 0f),
-                    end = Offset(lenLineBetweenTimes.toPx() + startLineBetweenTimes.toPx(), 0f),
+                    start =  Offset.Zero,
+                    end = Offset(lenLineBetweenTimes.toPx(), 0f),
                     strokeWidth = 2f
                 )
             }
             endTime.value?.let {
-                Text(text = it.format(Clock.timeFormatter), fontSize = fontSize)
+                Text(text = it.format(Clock.timeFormatterWithoutSeconds), fontSize = fontSize)
             }
         }
     }
@@ -78,7 +72,7 @@ class Activity(
             Row {
                 Image(
                     modifier = Modifier
-                        .padding(5.dp)
+                        .padding(horizontal = 5.dp)
                         .size(tagSize),
                     painter = painterResource(id = R.drawable.tag),
                     contentDescription = "tag"
@@ -92,7 +86,7 @@ class Activity(
                 modifier = Modifier
                     .background(Color.LightGray)
                     .fillMaxWidth()
-                    .padding(horizontal = 7.dp, vertical = 0.dp))
+                    .padding(horizontal = 5.dp, vertical = 8.dp))
         }
     }
 
@@ -103,18 +97,18 @@ class Activity(
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red, contentColor = Color.White),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 10.dp)
+                .padding(10.dp)
         ) {
             Text(text = "End", color = Color.White, fontSize = fontSize)
         }
     }
 
     @Composable
-    private fun DrawDeleteAndRepeatButtons(displayWidth: DisplayMetrics) {
+    private fun DrawDeleteAndRepeatButtons() {
         Image(
             modifier = Modifier
                 .padding(5.dp)
-                .size(deleteAndRepeatButtonsStize)
+                .size(deleteAndRepeatButtonsSize)
                 .clickable {
                     val newActivity = Activity(
                         tag = tag,
@@ -127,7 +121,6 @@ class Activity(
                         LogTags.ActivityChangeTag,
                         "added $newActivity [tag: $tag; description: $description; timeStart: $startTime; endTime: $endTime], new len: ${ListActivities.Count()}"
                     )
-                    ListActivities.RedrawList()
                 },
             painter = painterResource(id = R.drawable.repeat),
             contentDescription = "repeat"
@@ -136,15 +129,13 @@ class Activity(
         Image(
             modifier = Modifier
                 .padding(5.dp)
-                .size(deleteAndRepeatButtonsStize)
+                .size(deleteAndRepeatButtonsSize)
                 .clickable {
                     ListActivities.Remove(this)
                     Log.d(
                         LogTags.ActivityChangeTag,
                         "removed $this [tag: $tag; description: $description; timeStart: $startTime; endTime: $endTime], new len: ${ListActivities.Count()}"
                     )
-
-                    ListActivities.RedrawList()
                },
             painter = painterResource(id = R.drawable.delete),
             contentDescription = "delete"

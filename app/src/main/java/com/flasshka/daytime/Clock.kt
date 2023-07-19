@@ -1,5 +1,6 @@
 package com.flasshka.daytime
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -12,20 +13,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.*
+import com.jakewharton.threetenabp.AndroidThreeTen
 import kotlinx.coroutines.*
 import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
 
-class Clock {
+class Clock(context: Context) {
+
+    init {
+        AndroidThreeTen.init(context)
+        timerUpd()
+    }
+
     companion object {
         val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+        val timeFormatterWithoutSeconds = DateTimeFormatter.ofPattern("HH:mm")
     }
 
     private val timeState = mutableStateOf(LocalTime.now())
-
-    init {
-        timerUpd()
-    }
 
     private fun timerUpd() {
         MainScope().launch {

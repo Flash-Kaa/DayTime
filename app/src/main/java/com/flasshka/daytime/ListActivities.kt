@@ -3,14 +3,13 @@ package com.flasshka.daytime
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -25,16 +24,26 @@ object ListActivities {
     private val activities = mutableListOf<Activity>()
     private var changeToRedraw by mutableStateOf(false)
 
-    fun RedrawList() {
-        changeToRedraw = !changeToRedraw
+    fun Add(element: Activity) {
+        activities.add(0, element)
+        RedrawList()
     }
 
-    fun Add(element: Activity) = activities.add(0, element)
+    fun Remove(element: Activity) {
+        activities.remove(element)
+        RedrawList()
+    }
 
-    fun Remove(element: Activity) = activities.remove(element)
-    fun Remove(index: Int) = activities.removeAt(index)
+    fun Remove(index: Int) {
+        activities.removeAt(index)
+        RedrawList()
+    }
 
     fun Count() = activities.size
+
+    private fun RedrawList() {
+        changeToRedraw = !changeToRedraw
+    }
 
     @Composable
     fun DrawActivities(displayWidth: DisplayMetrics) {
@@ -56,7 +65,7 @@ object ListActivities {
                             strokeWidth = strokeWidth.toPx()
                         )
                     }
-                    activity.Draw(fontSize = fontSize, displayWidth = displayWidth)
+                    activity.Draw(fontSize = fontSize)
                 }
             }
         }
