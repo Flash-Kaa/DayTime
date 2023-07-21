@@ -20,7 +20,8 @@ import org.threeten.bp.LocalTime
 
 class Activity(
     private val tag: String, private val description: String,
-    private val startTime: LocalTime, private val endTime: MutableState<LocalTime?> = mutableStateOf(null)
+    private val startTime: LocalTime = LocalTime.now(),
+    private val endTime: MutableState<LocalTime?> = mutableStateOf(null)
 ) {
     companion object {
         var tagSize = 20.dp

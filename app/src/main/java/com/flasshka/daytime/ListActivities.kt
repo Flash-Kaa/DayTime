@@ -22,11 +22,19 @@ object ListActivities {
     var fontSize = 20.sp
 
     private val activities = mutableListOf<Activity>()
+    private val timers = mutableListOf<String>()
     private var changeToRedraw by mutableStateOf(false)
 
-    fun Add(element: Activity) {
+    fun Add(element: Activity, timer: String? = null): Boolean {
         activities.add(0, element)
         RedrawList()
+
+        if(timer != null && correctTime(timer)) {
+            timers.add(timer)
+            return true
+        }
+
+        return timer == null
     }
 
     fun Remove(element: Activity) {
@@ -43,6 +51,11 @@ object ListActivities {
 
     private fun RedrawList() {
         changeToRedraw = !changeToRedraw
+    }
+
+    private fun correctTime(time: String) : Boolean {
+        //TODO
+        return true
     }
 
     @Composable
