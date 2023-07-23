@@ -52,7 +52,7 @@ object ListActivities {
         set.forEach {
             val split = it.split(splitSymbol)
 
-            if(split.size != 4) {
+            if(split.size < 4) {
                 throw Exception("Serialization exception")
             }
 
