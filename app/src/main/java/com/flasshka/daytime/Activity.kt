@@ -29,6 +29,14 @@ class Activity(
         var deleteAndRepeatButtonsSize = 40.dp
     }
 
+    fun GetTag() = tag
+
+    fun GetDescription() = description
+
+    fun GetStartTime() = startTime.format(Clock.timeFormatter)
+
+    fun GetEndTime() = endTime.value?.format(Clock.timeFormatter) ?: ""
+
     @Composable
     fun Draw(fontSize: TextUnit) {
         Row(
@@ -119,7 +127,7 @@ class Activity(
 
                     ListActivities.Add(newActivity)
                     Log.d(
-                        LogTags.ActivityChangeTag,
+                        Tags.ActivityChangeLogTag,
                         "added $newActivity [tag: $tag; description: $description; timeStart: $startTime; endTime: $endTime], new len: ${ListActivities.Count()}"
                     )
                 },
@@ -134,7 +142,7 @@ class Activity(
                 .clickable {
                     ListActivities.Remove(this)
                     Log.d(
-                        LogTags.ActivityChangeTag,
+                        Tags.ActivityChangeLogTag,
                         "removed $this [tag: $tag; description: $description; timeStart: $startTime; endTime: $endTime], new len: ${ListActivities.Count()}"
                     )
                },

@@ -33,10 +33,20 @@ class Clock(context: Context) {
     private val timeState = mutableStateOf(LocalTime.now())
 
     private fun timerUpd() {
-        MainScope().launch {
+        MainScope().launch {//(Dispatchers.IO) {
             while (true) {
+                delay(1)
                 timeState.value = LocalTime.now()
-                Log.d(LogTags.TimeTag, timeState.value.format(timeFormatter))
+                //Log.d(LogTags.TimeTag, timeState.value.format(timeFormatter))
+
+                val time = LocalTime.now()
+                val timeInFormat = time.format(timeFormatter)
+
+                if(timeInFormat != timeState.value.format(timeFormatter)) {
+                    Log.d(Tags.TimeLogTag, timeState.value.format(timeFormatter))
+                    timeState.value = time
+                    delay(500)
+                }
                 delay(100)
             }
         }

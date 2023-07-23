@@ -1,7 +1,11 @@
 package com.flasshka.daytime
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -18,8 +22,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 class MainActivity : ComponentActivity() {
+
+    lateinit var sharedPref: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val createActivityPage = CreateActivityPage()
+
         setContent {
             val clock = Clock(context = this)
 
@@ -27,16 +37,35 @@ class MainActivity : ComponentActivity() {
             windowManager.defaultDisplay.getMetrics(displayMetrics)
             MainPage(
                 clock = clock,
-                displayMetrics = displayMetrics
+                displayMetrics = displayMetrics,
+                createActivityPage = createActivityPage
             )
+
+
+            sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+            val set = sharedPref.getStringSet(Tags.ListActivitySaveTag, mutableSetOf())
+            set?.let { ListActivities.WriteSetString(it) }
         }
     }
 
-    
+    @SuppressLint("CommitPrefEdits")
+    override fun onPause() {
+        super.onPause()
+
+        val editor = sharedPref.edit()
+        val r = ListActivities.ReadSetString()
+        if(editor == null)
+            Log.d("Tags.ListActivitySaveTag", "editor null")
+        editor?.putStringSet(Tags.ListActivitySaveTag, r)
+        editor?.apply()
+        Log.d("Tags.ListActivitySaveTag", r.toString() + editor.toString())
+    }
+
     @Composable
-    fun MainPage(
+    private fun MainPage(
         clock: Clock,
-        displayMetrics: DisplayMetrics
+        displayMetrics: DisplayMetrics,
+        createActivityPage: CreateActivityPage
     ) {
         Column (
             modifier = Modifier
@@ -51,10 +80,10 @@ class MainActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.size(0.dp, 40.dp))
 
-            CreateActivityPage.Draw(
+            createActivityPage.Draw(
                 image = painterResource(id = R.drawable.creating_button),
                 createButtonModifier = Modifier.size(80.dp),
-                addAndBackButtonsModifier = Modifier.size(width = 90.dp, height = 50.dp),
+                addAndCancelButtonsModifier = Modifier.size(width = 110.dp, height = 50.dp),
                 fontSize = 18.sp
             )
 
