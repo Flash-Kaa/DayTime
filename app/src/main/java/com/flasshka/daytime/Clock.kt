@@ -1,7 +1,6 @@
 package com.flasshka.daytime
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.Text
@@ -20,65 +19,49 @@ import org.threeten.bp.format.DateTimeFormatter
 
 class Clock(context: Context) {
 
-    init {
-        AndroidThreeTen.init(context)
-        timerUpd()
+    companion object {
+        val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+        val timeFormatterWithoutSeconds: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     }
 
-    companion object {
-        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
-        val timeFormatterWithoutSeconds = DateTimeFormatter.ofPattern("HH:mm")
+    init {
+        AndroidThreeTen.init(context)
     }
 
     private val timeState = mutableStateOf(LocalTime.now())
-
-    private fun timerUpd() {
-        MainScope().launch {//(Dispatchers.IO) {
-            while (true) {
-                delay(1)
-                timeState.value = LocalTime.now()
-                //Log.d(LogTags.TimeTag, timeState.value.format(timeFormatter))
-
-                val time = LocalTime.now()
-                val timeInFormat = time.format(timeFormatter)
-
-                if(timeInFormat != timeState.value.format(timeFormatter)) {
-                    Log.d(Tags.TimeLogTag, timeState.value.format(timeFormatter))
-                    timeState.value = time
-                    delay(500)
-                }
-                delay(100)
-            }
-        }
-    }
 
     @Composable
     fun DrawTimer(
         modifier: Modifier = Modifier,
         fontSize: TextUnit = 35.sp,
         widthOfSecondArc: Dp = 15.dp,
-        secondArcColors: List<Color> = listOf(Color.Blue, Color.Green),
+        arcColors: List<Color> = listOf(Color.Blue, Color.Green),
     ) {
         Box(
             modifier = modifier,
             contentAlignment = Alignment.Center
         ) {
-            Canvas(modifier = modifier
-            ) {
+            Canvas(modifier = modifier) {
                 drawArc(
-                    brush = Brush.horizontalGradient(
-                        colors = secondArcColors
-                    ),
+                    brush = Brush.horizontalGradient(arcColors),
                     startAngle = -90f,
-                    sweepAngle = (timeState.value.nano * 0.000000001f + timeState.value.second) * 6f,
+                    sweepAngle = ((timeState.value.nano * 1e-9 + timeState.value.second) * 6f).toFloat(),
                     useCenter = false,
-                    style = Stroke (
+                    style = Stroke(
                         width = widthOfSecondArc.toPx(),
                         cap = StrokeCap.Round
                     )
                 )
             }
+
             Text(text = timeState.value.format(timeFormatter), fontSize = fontSize)
+
+            LaunchedEffect(Unit) {
+                while (true) {
+                    delay(20)
+                    timeState.value = LocalTime.now()
+                }
+            }
         }
     }
 }
